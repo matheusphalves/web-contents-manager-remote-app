@@ -31,7 +31,6 @@ export class HomeComponent implements OnInit {
     public webContentService: WebContentService,
     public webContentStructureService: WebContentStructureService){
       this.getWebContentStructures()
-      this.getStructuredWebContents()
   }
 
   getWebContentStructures(){
@@ -49,6 +48,8 @@ export class HomeComponent implements OnInit {
 
         this.webContentStructures.push(webContentStructure)
       })
+
+      this.getStructuredWebContents()
     })
   }
 
