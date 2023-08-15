@@ -78,7 +78,11 @@ export class WebContentDialogComponent implements OnInit {
           contentFieldToUpdate['contentFieldValue']['data'] = data
         else
           this.data.contentFields.push({name: name, contentFieldValue: {data: data}})
+
+        console.log(this.data.contentFields)
       })
+    }else{
+      this.onCancel();
     }
 
   }
