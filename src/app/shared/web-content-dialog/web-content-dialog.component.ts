@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebContentModel } from 'src/app/models/WebContentModel';
+import { DataTypeHandlerService } from 'src/app/services/data-handlers/data-type-handler.service';
 
 @Component({
   selector: 'app-web-content-dialog',
@@ -16,7 +17,9 @@ export class WebContentDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: WebContentModel,
     public dialogRef: MatDialogRef<WebContentDialogComponent>,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private dataTypeHandlerService: DataTypeHandlerService) {
+
     this.form = this.formBuilder.group({
       title: [this.isChange ?? this.data.title, [Validators.required]],
       contentFields: this.formBuilder.array([])
@@ -47,8 +50,11 @@ export class WebContentDialogComponent implements OnInit {
 
     return this.formBuilder.group({
       inputControl: [
-        this.findContentFieldValueByName(contentStructureField.name)?.contentFieldValue?.data,
-        contentStructureField.required == true ? [Validators.required]: null
+        this.dataTypeHandlerService.handleDataToBeDisplayed(
+          this.findContentFieldValueByName(contentStructureField.name)?.contentFieldValue?.data,
+          contentStructureField.dataType
+        ),
+        contentStructureField.required == true ? [Validators.required] : null
       ],
       info: {
         name: contentStructureField.name,
@@ -67,23 +73,24 @@ export class WebContentDialogComponent implements OnInit {
 
   saveData() {
 
-    if(this.form.valid){
-      this.data.title = this.form.value.title;
-      this.form.value.contentFields.forEach((updatedContentField: any) => {
-        let data = updatedContentField.inputControl
-        let name = updatedContentField.info.name
-        let contentFieldToUpdate = this.findContentFieldValueByName(name)
-  
-        if(this.isChange)
-          contentFieldToUpdate['contentFieldValue']['data'] = data
-        else
-          this.data.contentFields.push({name: name, contentFieldValue: {data: data}})
-
-        console.log(this.data.contentFields)
-      })
-    }else{
+    if (!this.form.valid) {
       this.onCancel();
+      return;
     }
+
+    this.data.title = this.form.value.title;
+    this.form.value.contentFields.forEach((updatedContentField: any) => {
+      let data = this.dataTypeHandlerService
+        .handleDataType(updatedContentField.inputControl, updatedContentField.info.dataType)
+
+      let name = updatedContentField.info.name
+      let contentFieldToUpdate = this.findContentFieldValueByName(name)
+
+      if (this.isChange)
+        contentFieldToUpdate['contentFieldValue']['data'] = data
+      else
+        this.data.contentFields.push({ name: name, contentFieldValue: { data: data } })
+    });
 
   }
 
