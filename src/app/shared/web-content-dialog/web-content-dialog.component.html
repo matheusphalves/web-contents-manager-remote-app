@@ -33,8 +33,8 @@
 
     <div mat-dialog-actions>
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button type="submit" *ngIf="!isChange" [mat-dialog-close]="data" cdkFocusInitial>Save</button>
-      <button mat-button type="submit" *ngIf="isChange" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
+      <button mat-button type="submit" *ngIf="!isChange" disabled="{{!this.form.valid}}" [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+      <button mat-button type="submit" *ngIf="isChange" disabled="{{!this.form.valid}}" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
     </div>
   </form>
 </div>
