@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
+import { WebContentHistoric } from 'src/app/models/WebContentHistoric';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { WebContentStructureModel } from 'src/app/models/WebContentStructureModel';
+import { WebContentAuditorService } from 'src/app/services/auditors/web-content-auditor.service';
 import { WebContentStructureService } from 'src/app/services/web-content-structure.service';
 import { WebContentService } from 'src/app/services/web-content.service';
 import { WebContentDialogComponent } from 'src/app/shared/web-content-dialog/web-content-dialog.component';
@@ -31,7 +33,8 @@ export class HomeComponent implements OnInit {
   constructor(
     public dialog: MatDialog, 
     public webContentService: WebContentService,
-    public webContentStructureService: WebContentStructureService){
+    public webContentStructureService: WebContentStructureService,
+    public webContentAuditorService: WebContentAuditorService){
       this.getWebContentStructures()
   }
 
@@ -101,16 +104,18 @@ export class HomeComponent implements OnInit {
         if(this.dataSource.map(p => p.id).includes(result.id)){
           
           this.webContentService.putStructuredWebContent(result)
-          .subscribe(response => {
+          .subscribe((response: any) => {
             this.dataSource[result.position -1] = result
             this.table.renderRows();
+            this.webContentAuditorService.postWebContentHistory({webContentId: response.id, change: response.contentFields});
           })
         
         }else{
           this.webContentService.postStructuredWebContent(result)
-          .subscribe(response => {
+          .subscribe((response: any) => {
             this.getStructuredWebContents(undefined)
             this.table.renderRows();
+            this.webContentAuditorService.postWebContentHistory({webContentId: response.id, change: response.contentFields});
           })
         }
       }

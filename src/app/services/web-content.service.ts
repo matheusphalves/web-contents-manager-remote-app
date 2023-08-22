@@ -11,16 +11,18 @@ export class WebContentService {
 
   constructor(private http: HttpClient) { }
 
+  apiUrl: string = `${environment.hostUrl}/${environment.webContentUri}`
+
   getStructuredWebContents(search: string | undefined ): Observable<any>{
 
     const searchQuery = search != undefined && search? `?search=${search}`: ''
 
-    return this.http.get<any>(`${environment.apiUrl}/sites/${environment.siteId}/structured-contents${searchQuery}`);
+    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/structured-contents${searchQuery}`);
   }
 
   postStructuredWebContent(webContent: WebContentModel){
     return this.http.post(
-      `${environment.apiUrl}/sites/${environment.siteId}/structured-contents`, 
+      `${this.apiUrl}/sites/${environment.siteId}/structured-contents`, 
       JSON.stringify({
         title: webContent.title,
         contentStructureId: webContent.webContentStructure?.id,
@@ -30,7 +32,7 @@ export class WebContentService {
 
   putStructuredWebContent(webContent: WebContentModel){
     return this.http.put(
-      `${environment.apiUrl}/structured-contents/${webContent.id}`, 
+      `${this.apiUrl}/structured-contents/${webContent.id}`, 
       JSON.stringify({
         title: webContent.title,
         contentStructureId: webContent.webContentStructure?.id,

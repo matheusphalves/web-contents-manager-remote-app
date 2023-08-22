@@ -10,9 +10,11 @@ export class WebContentStructureService {
 
   constructor(public http: HttpClient) { }
 
+  apiUrl: string = `${environment.hostUrl}/${environment.webContentUri}`
+
 
   getWebContentStructures(): Observable<any>{
-    return this.http.get<any>(`${environment.apiUrl}/sites/${environment.siteId}/content-structures`);
+    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/content-structures`);
   }
 
 }
