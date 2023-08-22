@@ -121,13 +121,6 @@ export class HomeComponent implements OnInit {
     this.openDialog(webContent)
   }
 
-  deleteWebContent(webContentId: number): void {
-    this.webContentService.deleteStructuredWebContent(webContentId)
-    .subscribe((request) => {
-      this.dataSource = this.dataSource.filter(webContent => webContent.id !== webContentId)
-    })
-  }
-
   handleWebContentStructure(webContentStructureId: number): WebContentStructureModel | undefined{
     return this.webContentStructures
       .find(webContentStructure => 

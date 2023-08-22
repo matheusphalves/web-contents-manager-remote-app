@@ -35,8 +35,4 @@ export class WebContentService {
         contentFields: webContent.contentFields
       }))
   }
-
-  deleteStructuredWebContent(webContentId: number){
-    return this.http.delete(`${environment.apiUrl}/structured-contents/${webContentId}`);
-  }
 }
