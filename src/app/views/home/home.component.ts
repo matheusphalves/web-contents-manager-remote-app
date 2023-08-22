@@ -24,6 +24,8 @@ export class HomeComponent implements OnInit {
 
   selectedStructure!: WebContentStructureModel;
 
+  searchTerm!: string;
+
   ngOnInit(): void {}
 
   constructor(
@@ -49,15 +51,15 @@ export class HomeComponent implements OnInit {
         this.webContentStructures.push(webContentStructure)
       })
 
-      this.getStructuredWebContents()
+      this.getStructuredWebContents(undefined)
     })
   }
 
-  getStructuredWebContents(){
+  getStructuredWebContents(search: string | undefined){
     this.dataSource = [];
 
 
-    this.webContentService.getStructuredWebContents()
+    this.webContentService.getStructuredWebContents(search)
     .subscribe((data: any) =>{
       data.items.forEach((item: any) => {
         const webContent: WebContentModel = {
@@ -107,10 +109,9 @@ export class HomeComponent implements OnInit {
         }else{
           this.webContentService.postStructuredWebContent(result)
           .subscribe(response => {
-            this.getStructuredWebContents()
+            this.getStructuredWebContents(undefined)
             this.table.renderRows();
           })
-          
         }
       }
             
@@ -121,10 +122,26 @@ export class HomeComponent implements OnInit {
     this.openDialog(webContent)
   }
 
+  saveWebContentAsDraft(webContent: WebContentModel | null): void {
+
+  }
+
+  publishWebContent(webContent: WebContentModel | null): void {
+
+  }
+
+  unpublishWebContent(webContent: WebContentModel | null): void {
+    
+  }
+
   handleWebContentStructure(webContentStructureId: number): WebContentStructureModel | undefined{
     return this.webContentStructures
       .find(webContentStructure => 
         webContentStructure.id == webContentStructureId)
+  }
+
+  search(){
+    this.getStructuredWebContents(this.searchTerm.toLocaleLowerCase())
   }
 
 }

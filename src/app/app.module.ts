@@ -24,6 +24,7 @@ import { WebContentDialogComponent } from './shared/web-content-dialog/web-conte
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 @NgModule({
@@ -52,7 +53,9 @@ import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
     MatSelectModule,
     MatCheckboxModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+
+    FlexLayoutModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true }

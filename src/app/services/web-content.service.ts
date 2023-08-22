@@ -11,9 +11,11 @@ export class WebContentService {
 
   constructor(private http: HttpClient) { }
 
-  getStructuredWebContents(): Observable<any>{
+  getStructuredWebContents(search: string | undefined ): Observable<any>{
 
-    return this.http.get<any>(`${environment.apiUrl}/sites/${environment.siteId}/structured-contents`);
+    const searchQuery = search != undefined && search? `?search=${search}`: ''
+
+    return this.http.get<any>(`${environment.apiUrl}/sites/${environment.siteId}/structured-contents${searchQuery}`);
   }
 
   postStructuredWebContent(webContent: WebContentModel){
