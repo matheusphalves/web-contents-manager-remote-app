@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { WebContentModel } from '../models/WebContentModel';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,17 @@ export class WebContentService {
 
   apiUrl: string = `${environment.hostUrl}/${environment.webContentUri}`
 
-  getStructuredWebContents(search: string | undefined ): Observable<any>{
+  getStructuredWebContents(search: string | undefined, pageNumber: number, pageSize: number): Observable<any>{
+    
+    let params = new HttpParams()
+    .set('pageSize', pageSize.toString())
+    .set('page', pageNumber.toString());
 
-    const searchQuery = search != undefined && search? `?search=${search}`: ''
+    if(search != undefined && search){
+      params = params.set('search', search.toString())
+    }
 
-    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/structured-contents${searchQuery}`);
+    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/structured-contents`, {params});
   }
 
   postStructuredWebContent(webContent: WebContentModel){

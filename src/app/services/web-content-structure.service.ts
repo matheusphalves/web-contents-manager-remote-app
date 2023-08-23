@@ -14,7 +14,7 @@ export class WebContentStructureService {
 
 
   getWebContentStructures(): Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/content-structures`);
+    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/content-structures?pageSize=-1`);
   }
 
 }
