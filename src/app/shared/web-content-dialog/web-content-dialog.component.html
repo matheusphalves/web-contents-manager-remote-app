@@ -44,9 +44,16 @@
 
             <mat-form-field *ngIf="contentField.value.info.dataType =='string'">
               <mat-label>{{contentField.value.info.label}}</mat-label>
-              <input matInput type="text" formControlName="inputControl"
+              <input matInput type="text" formControlName="inputControl" *ngIf="contentField.value.info.inputControl =='text'"
                 required="{{contentField.value.info.required}}">
+                
             </mat-form-field>
+
+            <div *ngIf="contentField.value.info.dataType =='image'">
+              <mat-label>{{contentField.value.info.label}}</mat-label>
+              <input type="file"/>
+            </div>
+
           </ng-container>
         </div>
       </form>

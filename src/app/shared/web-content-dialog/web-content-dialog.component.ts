@@ -61,7 +61,8 @@ export class WebContentDialogComponent implements OnInit {
         dataType: contentStructureField.dataType,
         label: contentStructureField.label,
         disabled: true,
-        required: contentStructureField.required
+        required: contentStructureField.required,
+        inputControl: contentStructureField.inputControl
       }
     })
 

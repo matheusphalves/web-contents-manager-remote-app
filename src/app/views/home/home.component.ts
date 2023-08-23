@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
-import { WebContentHistoric } from 'src/app/models/WebContentHistoric';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { WebContentStructureModel } from 'src/app/models/WebContentStructureModel';
 import { WebContentAuditorService } from 'src/app/services/auditors/web-content-auditor.service';
