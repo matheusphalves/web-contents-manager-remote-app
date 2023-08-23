@@ -25,6 +25,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { QuillModule } from 'ngx-quill';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDatepickerModule,
     MatNativeDateModule,
 
-    FlexLayoutModule
+    FlexLayoutModule,
+    QuillModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true }
