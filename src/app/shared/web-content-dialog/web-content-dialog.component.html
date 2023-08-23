@@ -1,40 +1,56 @@
-<h1 *ngIf="!isChange" mat-dialog-title>Add Web Content</h1>
-<h1 *ngIf="isChange" mat-dialog-title>Update Web Content</h1>
-<span class="web-structure-name" *ngIf="data.webContentStructure != undefined">{{data.webContentStructure.name}}</span>
-<div mat-dialog-content>
+<div fxLayout="column">
+  <div fxLayout="row">
+    <div fxFlex="60%" class="border">
+      <h1 mat-dialog-title>
+        {{isChange? 'Update': 'Add'}} Web Content |
+        <span class="web-structure-name" *ngIf="data.webContentStructure != undefined">
+          {{data.webContentStructure.name}}
+        </span>
+      </h1>
 
-  <form [formGroup]="form" (ngSubmit)="saveData()">
-    <mat-form-field style="min-width: 100%;">
-      <mat-label>Title</mat-label>
-      <input matInput formControlName="title" required="true">
-    </mat-form-field>
-
-    <div *ngFor="let contentField of contentFieldsFormArray?.controls">
-      <ng-container [formGroup]="$any(contentField)">
-
-        <mat-form-field *ngIf="contentField.value.info.dataType=='date'">
-          <mat-label>{{contentField.value.info.label}}</mat-label>
-          <input matInput formControlName="inputControl"  required="{{contentField.value.info.required}}" [matDatepicker]="picker">
-          <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-checkbox class="example-margin" *ngIf="contentField.value.info.dataType =='boolean'"
-          formControlName="inputControl">{{contentField.value.info.label}}</mat-checkbox>
-
-        <mat-form-field *ngIf="contentField.value.info.dataType =='string'">
-          <mat-label>{{contentField.value.info.label}}</mat-label>
-          <input matInput type="text" formControlName="inputControl" required="{{contentField.value.info.required}}">
-        </mat-form-field>
-
-      </ng-container>
     </div>
-
-    <div mat-dialog-actions>
+    <div fxFlex="40%" fxLayoutAlign="end center" mat-dialog-actions>
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button type="submit" *ngIf="!isChange" disabled="{{!this.form.valid}}" [mat-dialog-close]="data" cdkFocusInitial>Save</button>
-      <button mat-button type="submit" *ngIf="isChange" disabled="{{!this.form.valid}}" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
+      <button mat-button (click)="onCancel()">Save as draft</button>
+      <button mat-button type="submit" (click)="saveData()" color="primary" disabled="{{!this.form.valid}}"
+        [mat-dialog-close]="data">
+        {{isChange? 'Update': 'Save'}} & Publish
+      </button>
     </div>
-  </form>
+
+  </div>
+  <div fxLayout="row">
+    <div mat-dialog-content>
+      <form [formGroup]="form">
+        <mat-form-field style="min-width: 100%;">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" required="true">
+        </mat-form-field>
+
+        <div *ngFor="let contentField of contentFieldsFormArray?.controls">
+          <ng-container [formGroup]="$any(contentField)">
+
+            <mat-form-field *ngIf="contentField.value.info.dataType=='date'">
+              <mat-label>{{contentField.value.info.label}}</mat-label>
+              <input matInput formControlName="inputControl" required="{{contentField.value.info.required}}"
+                [matDatepicker]="picker">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-checkbox class="example-margin" *ngIf="contentField.value.info.dataType =='boolean'"
+              formControlName="inputControl">{{contentField.value.info.label}}</mat-checkbox>
+
+            <mat-form-field *ngIf="contentField.value.info.dataType =='string'">
+              <mat-label>{{contentField.value.info.label}}</mat-label>
+              <input matInput type="text" formControlName="inputControl"
+                required="{{contentField.value.info.required}}">
+            </mat-form-field>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+
+  </div>
 </div>

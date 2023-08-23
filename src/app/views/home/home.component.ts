@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit {
 
   openDialog(webContent: WebContentModel| null): void{
     const dialogRef = this.dialog.open(WebContentDialogComponent, {
-      width: '300px',
+      width: '1180px',
       data: webContent === null? {
         id: null,
         title: '',
