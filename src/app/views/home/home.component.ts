@@ -75,6 +75,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   openDialog(webContent: WebContentModel | null): void {
     const dialogRef = this.dialog.open(WebContentDialogComponent, {
       width: '1180px',
+      height: '80%',
       data: webContent === null ? {
         id: null,
         title: '',
