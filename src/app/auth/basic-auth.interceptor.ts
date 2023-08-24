@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from "@angular/common/http";
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "src/environments/environment.development";
 
@@ -8,7 +8,6 @@ export class BasicAuthInterceptor implements HttpInterceptor{
 
         const clonedRequest = req.clone({
             setHeaders: {
-                'Content-Type':  'application/json',
                 'Authorization': 'Basic ' + btoa(`${environment.userEmail}:${environment.userPassword}`)
               }
         })

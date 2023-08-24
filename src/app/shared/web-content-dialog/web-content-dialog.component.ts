@@ -62,7 +62,8 @@ export class WebContentDialogComponent implements OnInit {
         label: contentStructureField.label,
         disabled: true,
         required: contentStructureField.required,
-        inputControl: contentStructureField.inputControl
+        inputControl: contentStructureField.inputControl,
+        description: contentStructureField.description
       }
     })
 
@@ -80,23 +81,49 @@ export class WebContentDialogComponent implements OnInit {
     }
 
     this.data.title = this.form.value.title;
-    this.form.value.contentFields.forEach((updatedContentField: any) => {
-      let data = this.dataTypeHandlerService
-        .handleDataType(updatedContentField.inputControl, updatedContentField.info.dataType)
+    this.form.value.contentFields.forEach(
+      async (updatedContentField: any) => {
+        const dataType = updatedContentField.info.dataType
 
-      let name = updatedContentField.info.name
-      let contentFieldToUpdate = this.findContentFieldValueByName(name)
+        let data = await this.dataTypeHandlerService.handleDataType(updatedContentField, dataType)
 
-      if (this.isChange)
-        contentFieldToUpdate['contentFieldValue']['data'] = data
-      else
-        this.data.contentFields.push({ name: name, contentFieldValue: { data: data } })
-    });
+        let name = updatedContentField.info.name
+        let contentFieldToUpdate = this.findContentFieldValueByName(name)
+
+        const contentFieldObject = this.dataTypeHandlerService
+          .handleContentFieldValueFormat(this.isChange, dataType, name, data, contentFieldToUpdate)
+
+        if (this.isChange) {
+          contentFieldToUpdate = contentFieldObject
+        } else {
+          this.data.contentFields.push(contentFieldObject);
+        }
+      });
 
   }
 
   get contentFieldsFormArray(): FormArray {
     return this.form.get('contentFields') as FormArray;
+  }
+
+  handleFileInput(event: any, inputName: string) {
+
+    const formData: FormData = new FormData();
+    const files = event.target.files;
+    const description = event.target.value;
+
+    this.form.value.contentFields.forEach((formControl: any) => {
+
+      if (formControl.info.dataType == 'image' && formControl.info.name == inputName) {
+
+        if (files != null) { 
+          formData.append('file', this.dataTypeHandlerService.renameFileWithTimestamp(files[0]));
+          formControl.info.inputControl = formData;
+        } else {
+          formControl.info.description = description;
+        }
+      }
+    });
   }
 
 }

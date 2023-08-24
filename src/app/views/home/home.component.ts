@@ -106,8 +106,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
         } else {
           this.webContentService.postStructuredWebContent(result)
             .subscribe((response: any) => {
-              this.getStructuredWebContents(undefined, 1, undefined)
-              this.table.renderRows();
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
             })
         }

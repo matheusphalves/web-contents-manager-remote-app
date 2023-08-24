@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { WebContentModel } from '../models/WebContentModel';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 export class WebContentService {
 
   constructor(private http: HttpClient) { }
+
+  headers = new HttpHeaders({ "Content-Type": 'application/json'});
 
   apiUrl: string = `${environment.hostUrl}/${environment.webContentUri}`
 
@@ -33,7 +35,7 @@ export class WebContentService {
         title: webContent.title,
         contentStructureId: webContent.webContentStructure?.id,
         contentFields: webContent.contentFields
-      }))
+      }), {headers: this.headers})
   }
 
   putStructuredWebContent(webContent: WebContentModel){
@@ -43,6 +45,6 @@ export class WebContentService {
         title: webContent.title,
         contentStructureId: webContent.webContentStructure?.id,
         contentFields: webContent.contentFields
-      }))
+      }), {headers: this.headers})
   }
 }
