@@ -67,10 +67,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   getStructuredWebContents(search: string | undefined, pageNumber: number, pageSize: number | undefined) {
-    this.dataSource.data = [];
 
-    this.webContentService.getStructuredWebContents(search, pageNumber, pageSize?? 20)
-      .subscribe((data: any) => {this.processDataSource(data)});
+    this.webContentService.getStructuredWebContents(search, pageNumber, pageSize ?? 20)
+      .subscribe((data: any) => { this.processDataSource(data) });
   }
 
   openDialog(webContent: WebContentModel | null): void {
@@ -139,20 +138,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   search() {
-    this.getStructuredWebContents(
-      this.searchTerm.toLocaleLowerCase(),
-      this.dataSource.paginator?.pageIndex ?? 1,
-      undefined
-    )
+    this.getStructuredWebContents(this.searchTerm? this.searchTerm: '', 1, 5)
   }
 
   onPageChange(event: PageEvent) {
     const pageNumber = event.pageIndex + 1;
-    const pageSize = event.pageSize?? 20;
+    const pageSize = event.pageSize ?? 20;
     this.getStructuredWebContents(undefined, pageNumber, pageSize);
   }
 
-  processDataSource(data: any){
+  processDataSource(data: any) {
 
     this.totalCount = data.totalCount;
 
@@ -163,13 +158,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         webContentStructure: this.handleWebContentStructure(item.contentStructureId),
         contentFields: item.contentFields,
         dateCreated: item.dateCreated
-      }          
+      }
     });
 
-    this.dataSource.data = webContents;
-    this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource.data)
-    console.log(this.totalCount)
+    this.dataSource = new MatTableDataSource(webContents)
   }
 
 }

@@ -19,21 +19,18 @@
             <div fxFlex="100">
                 <mat-form-field class="searchInput">
                     <mat-label>Search for publications</mat-label>
-                    <input matInput [(ngModel)]="searchTerm" />
+                    <input matInput type="text" [(ngModel)]="searchTerm" (keyup.enter)="search()">
+                    <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="search()">
+                        <mat-icon>search</mat-icon>
+                      </button>
                 </mat-form-field>
-            </div>
-
-            <div fxFlexAlign="center">
-                <button mat-button color="primary" (click)="search()">
-                    search
-                </button>
             </div>
         </div>
 
     </div>
 
     <div>
-        <mat-table #table [dataSource]="dataSource" class="mat-elevation-z8">
+        <table mat-table #table [dataSource]="dataSource" class="mat-elevation-z8">
 
             <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" [attr.colspan]="displayedColumns.length">
@@ -74,10 +71,10 @@
     
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </mat-table>
+        </table>
         <mat-paginator 
         #paginator
-        [length]="this.totalCount"
+        [length]="totalCount"
         (page)="onPageChange($event)"
         [pageSizeOptions] = "[5, 10, 20, 60]" showFirstLastButtons ></mat-paginator>
 
