@@ -27,6 +27,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
+import { LightboxModule } from 'ngx-lightbox';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { QuillModule } from 'ngx-quill';
     MatPaginatorModule,
 
     FlexLayoutModule,
-    QuillModule
+    QuillModule,
+    LightboxModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true }
