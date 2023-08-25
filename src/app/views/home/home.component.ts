@@ -72,8 +72,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
       .subscribe((data: any) => { this.processDataSource(data) });
   }
 
-  openDialog(webContent: WebContentModel | null): void {
+  async openDialog(webContent: WebContentModel | null): Promise<void> {
     const dialogRef = this.dialog.open(WebContentDialogComponent, {
+      disableClose: true,
       width: '1180px',
       height: '80%',
       data: webContent === null ? {
@@ -90,27 +91,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.componentInstance.dataSaved.subscribe((data) => {
 
-      if (result != undefined) {
+      if (data != undefined) {
 
-        if (this.dataSource.data.map(p => p.id).includes(result.id)) {
+        if (this.dataSource.data.map(p => p.id).includes(data.id)) {
 
-          this.webContentService.putStructuredWebContent(result)
+          this.webContentService.patchStructuredWebContent(data)
             .subscribe((response: any) => {
-              this.dataSource.data[result.position - 1] = result
+              this.dataSource.data[data.position - 1] = data
               this.table.renderRows();
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
             })
 
         } else {
-          this.webContentService.postStructuredWebContent(result)
+          this.webContentService.postStructuredWebContent(data)
             .subscribe((response: any) => {
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
             })
         }
       }
-
     });
   }
 
@@ -137,13 +137,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   search() {
-    this.getStructuredWebContents(this.searchTerm? this.searchTerm: '', 1, 5)
+    this.getStructuredWebContents(this.searchTerm ? this.searchTerm : '', 1, 5)
   }
 
   onPageChange(event: PageEvent) {
     const pageNumber = event.pageIndex + 1;
     const pageSize = event.pageSize ?? 20;
-    this.getStructuredWebContents(undefined, pageNumber, pageSize);
+    this.getStructuredWebContents(this.searchTerm, pageNumber, pageSize);
   }
 
   processDataSource(data: any) {

@@ -27,7 +27,7 @@
           <input matInput formControlName="title" required="true">
         </mat-form-field>
 
-        <div *ngFor="let contentField of contentFieldsFormArray?.controls">
+        <div *ngFor="let contentField of contentFieldsFormArray?.controls; let i=index">
           <ng-container [formGroup]="$any(contentField)">
 
             <mat-form-field *ngIf="contentField.value.info.dataType=='date'">
@@ -57,27 +57,35 @@
 
             <div *ngIf="contentField.value.info.dataType =='image'">
               <div fxLayout="row">
-                <div fxFlex>
-                  <mat-label>{{contentField.value.info.label}}</mat-label>
+                <div fxFlex="90">
+                  <mat-label>{{contentField.value.info.label}} {{contentField.value.info.required? '*': ''}}</mat-label>
                   <mat-form-field>
                     <button mat-button type="button" (click)="fileInput.click()">
                       <mat-icon>upload_file</mat-icon>
-                      <input #fileInput type="file" style="display: none;" formControlName="inputControl" (change)="handleFileInput($event, contentField.value.info.name)"/>
+                      <input #fileInput type="file" style="display: none;" formControlName="inputControl"
+                        required="{{contentField.value.info.required}}"
+                        (change)="handleFileInput($event, contentField.value.info.name)" />
+                      <span *ngIf="contentField.value.info.image?.title">{{contentField.value.info.image.title}}</span>
                     </button>
 
-                    <input matInput type="text"  placeholder="Description"
-                    (change)="handleFileInput($event, contentField.value.info.name)" />
+                    <input matInput type="text" placeholder="Description"
+                      value="{{contentField.value.info.image?.description}}"
+                      (change)="handleFileInput($event, contentField.value.info.name)" />
 
                   </mat-form-field>
-
                 </div>
 
-                <div fxFlex fxLayoutAlign="end center">
-                  <button *ngIf="true" matSuffix mat-icon-button>
+                <div fxFlex fxLayoutAlign="center center">
+                  <button *ngIf="contentField.value.info.image?.contentUrl"
+                    (click)="clearImageInput(contentField.value.info.name)" matSuffix mat-icon-button>
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                  <button *ngIf="contentField.value.info.image?.contentUrl"
+                    (click)="openImage(contentField.value.info.image)" matSuffix mat-icon-button>
                     <mat-icon>visibility</mat-icon>
                   </button>
                 </div>
-                
+
               </div>
 
             </div>

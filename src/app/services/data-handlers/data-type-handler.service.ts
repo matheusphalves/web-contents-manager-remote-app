@@ -19,13 +19,14 @@ export class DataTypeHandlerService {
         return this.dateHandlerService.dateToIsoString(updatedContentField.inputControl);
 
       case 'image':
-        let image;
 
-        await this.uploadImage(
+      if(!updatedContentField.info.inputControl)
+        return updatedContentField.info.image;
+
+        return this.uploadImage(
           updatedContentField.info.inputControl,
-          updatedContentField.info.description).then((response) => { image = response; });
-
-        return image;
+          updatedContentField.info.image.description)
+          .then((image) => { return image; });
 
       default:
         return updatedContentField.inputControl;
