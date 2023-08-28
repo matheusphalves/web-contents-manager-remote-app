@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         if (this.dataSource.data.map(p => p.id).includes(data.id)) {
 
-          this.webContentService.patchStructuredWebContent(data)
+          this.webContentService.putStructuredWebContent(data)
             .subscribe((response: any) => {
               this.dataSource.data[data.position - 1] = data
               this.table.renderRows();

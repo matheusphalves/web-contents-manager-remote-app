@@ -38,8 +38,8 @@ export class WebContentService {
       }), {headers: this.headers})
   }
 
-  patchStructuredWebContent(webContent: WebContentModel){
-    return this.http.patch(
+  putStructuredWebContent(webContent: WebContentModel){
+    return this.http.put(
       `${this.apiUrl}/structured-contents/${webContent.id}`, 
       JSON.stringify({
         title: webContent.title,
