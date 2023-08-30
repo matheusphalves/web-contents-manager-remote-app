@@ -28,6 +28,7 @@ import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
 import { LightboxModule } from 'ngx-lightbox';
+import { RepeatableButtonComponent } from './shared/forms/repeatable-button/repeatable-button.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { LightboxModule } from 'ngx-lightbox';
     HomeComponent,
     HeaderComponent,
     FooterComponent,
-    WebContentDialogComponent
+    WebContentDialogComponent,
+    RepeatableButtonComponent
   ],
   imports: [
     BrowserModule,
