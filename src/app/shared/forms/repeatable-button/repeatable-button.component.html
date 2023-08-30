@@ -1,13 +1,30 @@
-<div *ngIf="isEnabled" fxLayout="row" fxLayoutAlign="start center">
-    <div>
-        <button (click)="onAddInput()" matSuffix mat-icon-button>
-            <mat-icon>add</mat-icon>
-        </button>
+<div fxLayout="row">
+
+    <div fxLayoutAlign="start center">
+        <mat-label>{{label}} {{isRequired==true? "*": ""}}</mat-label>
     </div>
 
-    <div>
-        <button (click)="onRemoveInput()" matSuffix mat-icon-button>
-            <mat-icon>remove</mat-icon>
-        </button>
+    <div fxFlex fxLayoutAlign="end end">
+        <div *ngIf="isRepeatable">
+            <button (click)="onAddInput()" matSuffix matTooltip="Add" mat-icon-button>
+                <mat-icon>add</mat-icon>
+            </button>
+    
+            <button (click)="onRemoveInput()" matSuffix matTooltip="Remove" mat-icon-button>
+                <mat-icon>remove</mat-icon>
+            </button>
+        </div>
+
+        <div *ngIf="isImage">
+            <button (click)="onOpenImage()" matSuffix matTooltip="Open" mat-icon-button>
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </div>
+    
+        <div *ngIf="isImage">
+            <button (click)="onClearImageInput()"  matSuffix matTooltip="Clear" mat-icon-button>
+                <mat-icon>clear</mat-icon>
+            </button>
+        </div>
     </div>
 </div>

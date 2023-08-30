@@ -18,7 +18,7 @@
       </button>
     </div>
   </div>
-  
+
   <div fxLayout="row">
     <div mat-dialog-content>
       <form [formGroup]="form">
@@ -31,8 +31,9 @@
           <ng-container [formGroup]="$any(contentField)">
 
             <div fxFlex *ngIf="contentField.value.info.dataType=='date'">
+              <ng-container *ngTemplateOutlet="repeatableButtons"></ng-container>
+
               <mat-form-field *ngIf="contentField.value.info.dataType=='date'">
-                <mat-label>{{contentField.value.info.label}}</mat-label>
                 <input matInput formControlName="inputControl" required="{{contentField.value.info.required}}"
                   [matDatepicker]="picker">
                 <mat-hint>MM/DD/YYYY</mat-hint>
@@ -48,8 +49,9 @@
 
             <div fxFlex
               *ngIf="contentField.value.info.dataType =='string' && contentField.value.info.inputControl =='text' && contentField.value.info.label.toLowerCase()!='location'">
+              <ng-container *ngTemplateOutlet="repeatableButtons"></ng-container>
+              
               <mat-form-field>
-                <mat-label>{{contentField.value.info.label}}</mat-label>
                 <input matInput type="text" formControlName="inputControl"
                   required="{{contentField.value.info.required}}">
               </mat-form-field>
@@ -57,15 +59,17 @@
 
             <div fxFlex
               *ngIf="contentField.value.info.dataType =='string' && contentField.value.info.inputControl==undefined">
-              <div>
-                <mat-label>{{contentField.value.info.label}}</mat-label>
-                <quill-editor formControlName="inputControl" [placeholder]="'Type some text...'"></quill-editor>
-              </div>
+              
+              <ng-container *ngTemplateOutlet="repeatableButtons"></ng-container>
+              <quill-editor formControlName="inputControl" [placeholder]="'Type some text...'"></quill-editor>
+              
             </div>
 
             <div fxFlex fxLayout="row" *ngIf="contentField.value.info.dataType =='image'">
-              <div fxFlex="90">
-                <mat-label>{{contentField.value.info.label}} {{contentField.value.info.required? '*': ''}}</mat-label>
+              <div fxFlex>
+
+                <ng-container *ngTemplateOutlet="repeatableButtons"></ng-container>
+
                 <mat-form-field>
                   <button mat-button type="button" (click)="fileInput.click()">
                     <mat-icon>upload_file</mat-icon>
@@ -80,17 +84,6 @@
                     (change)="handleFileInput($event, contentField.value.info.name, i)" />
 
                 </mat-form-field>
-              </div>
-
-              <div fxFlex fxLayoutAlign="center center">
-                <button *ngIf="contentField.value.info.image?.contentUrl"
-                  (click)="clearImageInput(contentField.value.info.name, i)" matSuffix mat-icon-button>
-                  <mat-icon>clear</mat-icon>
-                </button>
-                <button *ngIf="contentField.value.info.image?.contentUrl"
-                  (click)="openImage(contentField.value.info.image)" matSuffix mat-icon-button>
-                  <mat-icon>visibility</mat-icon>
-                </button>
               </div>
             </div>
 
@@ -109,11 +102,17 @@
               </mat-form-field>
             </div>
 
-            <div *ngIf="contentField.value.info.repeatable==true && contentField.value.info.label.toLowerCase()!='location'">
-              <app-repeatable-button (addInput)="copyFormControl(contentField.value.info, i)"
-                (removeInput)="removeFormControl(contentField.value.info.name, i)"
-                [isEnabled]="contentField.value.info.repeatable==true"></app-repeatable-button>
-            </div>
+            <ng-template #repeatableButtons>
+              <app-repeatable-button
+              (addInput)="copyFormControl(contentField.value.info, i)"
+              (removeInput)="removeFormControl(contentField.value.info.name, i)"
+              [isRepeatable]="contentField.value.info.repeatable==true"
+              [isImage]="contentField.value.info.image.contentUrl != undefined"
+              [label]="contentField.value.info.label" [isRequired]="contentField.value.info.required"
+              (openImage)="openImage(contentField.value.info.image)"
+              (clearImageInput)="clearImageInput(contentField.value.info.name, i)" />
+            </ng-template>
+
           </ng-container>
         </div>
       </form>
