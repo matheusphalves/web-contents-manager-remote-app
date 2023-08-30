@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { DataTypeHandlerService } from 'src/app/services/data-handlers/data-type-handler.service';
@@ -17,6 +17,14 @@ export class WebContentDialogComponent implements OnInit {
   @Output() dataSaved: EventEmitter<any> = new EventEmitter();
   isChange!: boolean
   form!: FormGroup;
+
+  toppings = new FormControl('');
+
+  toppingList: string[] = ['INACAP Arica',
+    'INACAP Iquique',
+    'INACAP Calama',
+    'INACAP Antofagasta',
+    'INACAP Copiapó'];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: WebContentModel,
@@ -43,32 +51,45 @@ export class WebContentDialogComponent implements OnInit {
   createFormGroupForContentFields() {
 
     const formFields = this.contentFieldsFormArray;
+    const webContentStructureId = this.data.webContentStructure?.id ?? 0;
+    let index = 0;
 
-    this.data.webContentStructure?.contentStructureFields?.forEach((
-      (contentStructureField: any) => {
-        formFields.push(this.createFormGroup(contentStructureField));
-      }))
-
+    if(this.isChange){
+      this.data.contentFields.forEach(
+        ((contentFieldValue: any) => {
+          const contentStructureField = this.getWebContentStructureByName(contentFieldValue.name);
+          formFields.push(this.createFormGroup(webContentStructureId, contentStructureField, index));
+          index++;
+      }));
+    } else{
+      this.data.webContentStructure?.contentStructureFields?.forEach((
+        (contentStructureField: any) => {
+          formFields.push(this.createFormGroup(webContentStructureId, contentStructureField, index));
+          index++;
+        }))
+    }
   }
 
-  createFormGroup(contentStructureField: any): FormGroup {
+  createFormGroup(contentStructureId: number, contentStructureField: any, index: number): FormGroup {
 
-    const contentFieldValue: any = this.findContentFieldValueByName(contentStructureField.name)?.contentFieldValue;
+    const contentFieldValue: any = this.findContentFieldValueByName(contentStructureField.name, index)?.contentFieldValue;
 
     return this.formBuilder.group({
       inputControl: [
         this.dataTypeHandlerService.handleDataToBeDisplayed(
-          contentFieldValue?.data?? '',
+          contentFieldValue?.data ?? '',
           contentStructureField.dataType
         ),
         contentStructureField.required == true ? [Validators.required] : null
       ],
       info: {
+        contentStructureFieldId: contentStructureId,
         name: contentStructureField.name,
         dataType: contentStructureField.dataType,
         label: contentStructureField.label,
         disabled: true,
         required: contentStructureField.required,
+        repeatable: contentStructureField.repeatable,
         inputControl: contentStructureField.inputControl,
         image: {
           id: contentFieldValue?.image?.id,
@@ -85,8 +106,19 @@ export class WebContentDialogComponent implements OnInit {
 
   }
 
-  findContentFieldValueByName(fieldName: string): any {
-    return this.data.contentFields?.find((contentField: any) => contentField?.name == fieldName);
+  findContentFieldValueByName(fieldName: string, targetIndex: number): any {
+
+    let index = 0;
+    let searchResult = {}; 
+
+    this.data.contentFields.forEach((contentField: any) => {
+      if (contentField?.name == fieldName && index == targetIndex) {
+        searchResult = contentField;
+      }
+      index++;
+    })
+
+    return searchResult;
   }
 
   async saveData(): Promise<any> {
@@ -96,9 +128,11 @@ export class WebContentDialogComponent implements OnInit {
     try {
 
       this.data.title = this.form.value.title;
+      let index = 0;
 
       for (const updatedContentField of this.form.value.contentFields) {
-        await this.handleDataProcessing(updatedContentField).then(() => { })
+        await this.handleDataProcessing(updatedContentField, index).then(() => { })
+        index++;
       }
 
       this.dataSaved.emit(this.data);
@@ -113,16 +147,15 @@ export class WebContentDialogComponent implements OnInit {
     return this.form.get('contentFields') as FormArray;
   }
 
-  handleFileInput(event: any, inputName: string) {
+  handleFileInput(event: any, inputName: string, searchIndex: number) {
 
     const formData: FormData = new FormData();
     const files = event.target.files;
     const description = event.target.value;
+    let index=0;
 
     this.form.value.contentFields.forEach((formControl: any) => {
-
-      if (formControl.info.dataType == 'image' && formControl.info.name == inputName) {
-
+      if (formControl.info.dataType == 'image' && formControl.info.name == inputName && index == searchIndex) {
         if (files != null) {
           if (!imageTypeValidator(files[0]))
             throw Error('Invalid file type')
@@ -137,25 +170,23 @@ export class WebContentDialogComponent implements OnInit {
           formControl.info.image['description'] = description;
         }
       }
+      index++;
     });
 
   }
 
-  async handleDataProcessing(updatedContentField: any): Promise<void> {
+  async handleDataProcessing(updatedContentField: any, index: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const dataType = updatedContentField.info.dataType
 
       let data = await this.dataTypeHandlerService.handleDataType(updatedContentField, dataType)
-
       let name = updatedContentField.info.name
-      let contentFieldToUpdate = this.findContentFieldValueByName(name)
+      let contentFieldToUpdate = this.findContentFieldValueByName(name, index)
 
       const contentFieldObject = this.dataTypeHandlerService
         .handleContentFieldValueFormat(this.isChange, dataType, name, data, contentFieldToUpdate)
 
-      if (this.isChange) {
-        contentFieldToUpdate = contentFieldObject
-      } else {
+      if(!this.isChange){
         this.data.contentFields.push(contentFieldObject);
       }
 
@@ -163,22 +194,57 @@ export class WebContentDialogComponent implements OnInit {
     })
   }
 
-  clearImageInput(inputName: string){
+  clearImageInput(inputName: string, targetIndex: number) {
+    let index=0;
     this.form.value.contentFields.forEach((formControl: any) => {
-      if (formControl.info.dataType == 'image' && formControl.info.name == inputName) {
+      if (formControl.info.dataType == 'image' && formControl.info.name == inputName && index == targetIndex) {
         formControl.info.image = {}
         formControl.info.inputControl = undefined;
       }
+      index++;
     });
   }
 
-  openImage(image: any):void{
+  openImage(image: any): void {
     image = {
       src: `${environment.hostUrl}/${image.contentUrl}`,
       caption: image.description
     }
 
-    this.ligthBox.open([image], 0);  
+    this.ligthBox.open([image], 0);
+  }
+
+  copyFormControl(contentFieldInfo: any, index: number): void {
+
+    let webContentStructure = this.getWebContentStructureByName(contentFieldInfo.name);
+
+    if(this.isChange)
+      this.data.contentFields.splice(index + 1, 0, this.dataTypeHandlerService.copyOfContentField(this.data.contentFields[index]))
+
+    const copyOfFormGroup = this.createFormGroup(contentFieldInfo.contentStructureFieldId, webContentStructure, -1)
+    this.contentFieldsFormArray.insert(index + 1, copyOfFormGroup)
+
+  }
+
+  getWebContentStructureByName(webContentStructureName: string): any{
+    return this.data.webContentStructure?.contentStructureFields?.find((webContentStructure: any) => webContentStructure.name == webContentStructureName);
+  }
+
+  removeFormControl(inputName: string, index: number): void {
+
+    let availableFields = 0;
+
+    this.form.value.contentFields.forEach((formControl: any) => {
+      if (formControl.info.name == inputName) {
+        availableFields++;
+      }
+    });
+
+    if (availableFields > 1) {
+      this.contentFieldsFormArray.removeAt(index);
+      this.data.contentFields.splice(index, 1);
+    }
+
   }
 
 }

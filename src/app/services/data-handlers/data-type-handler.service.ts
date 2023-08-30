@@ -48,9 +48,9 @@ export class DataTypeHandlerService {
 
     if (isChange) {
       if (dataType == 'image') {
-        contentFieldToUpdate['contentFieldValue']['image'] = data
+        contentFieldToUpdate['contentFieldValue'] = {'image': data}
       } else {
-        contentFieldToUpdate['contentFieldValue']['data'] = data
+        contentFieldToUpdate['contentFieldValue'] = {'data': data}
       }
     } else {
       if (dataType == 'image') {
@@ -101,5 +101,16 @@ export class DataTypeHandlerService {
     const renamedFile = new File([file], newFileName, { type: file.type });
 
     return renamedFile;
+  }
+
+  copyOfContentField(contentFieldValue: any): any{
+    return {
+      'name': contentFieldValue.name,
+      'label': contentFieldValue.label,
+      'dataType': contentFieldValue.dataType,
+      'nestedContentFields': contentFieldValue.nestedContentFields,
+      'repeatable': contentFieldValue.repeatable,
+      'contentFieldValue': {}
+    }
   }
 }
