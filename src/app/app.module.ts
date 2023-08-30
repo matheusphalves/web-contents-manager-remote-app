@@ -17,6 +17,7 @@ import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
 
 import { NgMaterialModule } from './modules/ng-material/ng-material/ng-material.module';
 import { FormModuleModule } from './modules/forms/form-module/form-module.module';
+import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-content-snackbar.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { FormModuleModule } from './modules/forms/form-module/form-module.module
     HeaderComponent,
     FooterComponent,
     WebContentDialogComponent,
-    RepeatableButtonComponent
+    RepeatableButtonComponent,
+    WebContentSnackbarComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,8 @@ import { FormModuleModule } from './modules/forms/form-module/form-module.module
 
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
+    WebContentSnackbarComponent
   ],
   bootstrap: [AppComponent]
 })

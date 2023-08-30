@@ -5,6 +5,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { WebContentStructureModel } from 'src/app/models/WebContentStructureModel';
 import { WebContentAuditorService } from 'src/app/services/auditors/web-content-auditor.service';
+import { WebContentSnackbarService } from 'src/app/services/web-content-snackbar.service';
 import { WebContentStructureService } from 'src/app/services/web-content-structure.service';
 import { WebContentService } from 'src/app/services/web-content.service';
 import { WebContentDialogComponent } from 'src/app/shared/web-content-dialog/web-content-dialog.component';
@@ -39,7 +40,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     public webContentService: WebContentService,
     public webContentStructureService: WebContentStructureService,
-    public webContentAuditorService: WebContentAuditorService) {
+    public webContentAuditorService: WebContentAuditorService,
+    public webContentSnackBar: WebContentSnackbarService) {
     this.getWebContentStructures()
   }
   ngAfterViewInit(): void {
@@ -51,25 +53,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.webContentStructures = [];
 
     this.webContentStructureService.getWebContentStructures()
-      .subscribe((data: any) => {
-        data.items.forEach((item: any) => {
-          const webContentStructure: WebContentStructureModel = {
-            id: item.id,
-            name: item.name,
-            contentStructureFields: item.contentStructureFields
-          }
+      .subscribe({
+        next: (data: any) => {
+          data.items.forEach((item: any) => {
+            const webContentStructure: WebContentStructureModel = {
+              id: item.id,
+              name: item.name,
+              contentStructureFields: item.contentStructureFields
+            }
 
-          this.webContentStructures.push(webContentStructure)
-        })
+            this.webContentStructures.push(webContentStructure)
+          })
 
-        this.getStructuredWebContents(undefined, 1, this.dataSource.paginator?.pageSize)
+          this.getStructuredWebContents(undefined, 1, this.dataSource.paginator?.pageSize)
+        },
+        error: (error) => this.webContentSnackBar.openSnackBarWithErrorStatus(error.error.title)
       });
   }
 
   getStructuredWebContents(search: string | undefined, pageNumber: number, pageSize: number | undefined) {
 
     this.webContentService.getStructuredWebContents(search, pageNumber, pageSize ?? 20)
-      .subscribe((data: any) => { this.processDataSource(data) });
+      .subscribe({
+        next: (data: any) => { this.processDataSource(data) },
+        error: (errorResponse) => this.webContentSnackBar.openSnackBarWithErrorStatus(errorResponse.error.title)
+      });
   }
 
   async openDialog(webContent: WebContentModel | null): Promise<void> {
@@ -97,18 +105,27 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         if (this.dataSource.data.map(p => p.id).includes(data.id)) {
 
-          this.webContentService.putStructuredWebContent(data)
-            .subscribe((response: any) => {
+          this.webContentService.putStructuredWebContent(data).subscribe({
+            next: (response: any) => {
               this.dataSource.data[data.position - 1] = data
               this.table.renderRows();
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
-            })
+
+              this.webContentSnackBar.openSnackBarWithSuccessStatus('The post has been updated.')
+            },
+            error: (errorResponse) => {
+              this.webContentSnackBar.openSnackBarWithErrorStatus(errorResponse.error.title)
+            }
+          })
 
         } else {
-          this.webContentService.postStructuredWebContent(data)
-            .subscribe((response: any) => {
+          this.webContentService.postStructuredWebContent(data).subscribe({
+            next: (response: any) => {
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
-            })
+              this.webContentSnackBar.openSnackBarWithSuccessStatus('The post was created successfully.')
+            },
+            error: (errorResponse) => this.webContentSnackBar.openSnackBarWithErrorStatus(errorResponse.error.title),
+          });
         }
       }
     });

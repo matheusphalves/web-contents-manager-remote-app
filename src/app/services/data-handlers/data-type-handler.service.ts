@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DateHandlerService } from './date-handler.service';
 import { WebContentDocumentService } from '../web-content-document.service';
 import { WebContentImageModel } from '../../models/WebContentImageModel';
+import { WebContentSnackbarService } from '../web-content-snackbar.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ export class DataTypeHandlerService {
 
   constructor(
     private dateHandlerService: DateHandlerService,
-    private webContentDocumentService: WebContentDocumentService) { }
+    private webContentDocumentService: WebContentDocumentService,
+    private webContentSnackBar: WebContentSnackbarService) { }
 
   async handleDataType(updatedContentField: any, dataType: string) {
 
@@ -20,8 +22,8 @@ export class DataTypeHandlerService {
 
       case 'image':
 
-      if(!updatedContentField.info.inputControl)
-        return updatedContentField.info.image;
+        if (!updatedContentField.info.inputControl)
+          return updatedContentField.info.image;
 
         return this.uploadImage(
           updatedContentField.info.inputControl,
@@ -48,9 +50,9 @@ export class DataTypeHandlerService {
 
     if (isChange) {
       if (dataType == 'image') {
-        contentFieldToUpdate['contentFieldValue'] = {'image': data}
+        contentFieldToUpdate['contentFieldValue'] = { 'image': data }
       } else {
-        contentFieldToUpdate['contentFieldValue'] = {'data': data}
+        contentFieldToUpdate['contentFieldValue'] = { 'data': data }
       }
     } else {
       if (dataType == 'image') {
@@ -66,12 +68,18 @@ export class DataTypeHandlerService {
 
   async uploadImage(formData: any, description: string) {
 
-    let documentFolderId = 0;
+    let documentFolderId = -1;
     let webContentImage: WebContentImageModel;
 
-    await this.webContentDocumentService.getWebContentParentFolder().then((response: any) => {
-      documentFolderId = response.items[0].id;
-    })
+    await this.webContentDocumentService.getWebContentParentFolder().then(
+      (response: any) => {
+        try {
+          documentFolderId = response.items[0].id;
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    )
 
     return this.webContentDocumentService.postWebContentDocument(formData, documentFolderId).then((response) => {
 
@@ -86,7 +94,8 @@ export class DataTypeHandlerService {
         title: response.title
       }
     }, (error) => {
-      console.log('error');
+      this.webContentSnackBar.openSnackBarWithErrorStatus(error.error.title)
+      return undefined;
     });
   }
 
@@ -103,7 +112,7 @@ export class DataTypeHandlerService {
     return renamedFile;
   }
 
-  copyOfContentField(contentFieldValue: any): any{
+  copyOfContentField(contentFieldValue: any): any {
     return {
       'name': contentFieldValue.name,
       'label': contentFieldValue.label,

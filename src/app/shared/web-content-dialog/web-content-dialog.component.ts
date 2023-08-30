@@ -129,13 +129,16 @@ export class WebContentDialogComponent implements OnInit {
 
       this.data.title = this.form.value.title;
       let index = 0;
+      let hasError = false;
 
       for (const updatedContentField of this.form.value.contentFields) {
-        await this.handleDataProcessing(updatedContentField, index).then(() => { })
+        await this.handleDataProcessing(updatedContentField, index)
+        .then(() => { })
+        .catch(() => {hasError=true}) 
         index++;
       }
 
-      this.dataSaved.emit(this.data);
+      this.dataSaved.emit(hasError? undefined: this.data);
 
     } catch (error) {
       console.log(error);
@@ -177,20 +180,29 @@ export class WebContentDialogComponent implements OnInit {
 
   async handleDataProcessing(updatedContentField: any, index: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      const dataType = updatedContentField.info.dataType
+      try {
+        const dataType = updatedContentField.info.dataType
 
-      let data = await this.dataTypeHandlerService.handleDataType(updatedContentField, dataType)
-      let name = updatedContentField.info.name
-      let contentFieldToUpdate = this.findContentFieldValueByName(name, index)
+        let data = await this.dataTypeHandlerService.handleDataType(updatedContentField, dataType)
+        let name = updatedContentField.info.name
+        let contentFieldToUpdate = this.findContentFieldValueByName(name, index)
 
-      const contentFieldObject = this.dataTypeHandlerService
-        .handleContentFieldValueFormat(this.isChange, dataType, name, data, contentFieldToUpdate)
-
-      if(!this.isChange){
-        this.data.contentFields.push(contentFieldObject);
+        if(data == undefined){
+          reject()
+        }
+  
+        const contentFieldObject = this.dataTypeHandlerService
+          .handleContentFieldValueFormat(this.isChange, dataType, name, data, contentFieldToUpdate)
+  
+        if(!this.isChange){
+          this.data.contentFields.push(contentFieldObject);
+        }
+  
+        resolve();
+      } catch (error) {
+        reject()
       }
 
-      resolve();
     })
   }
 
@@ -244,7 +256,5 @@ export class WebContentDialogComponent implements OnInit {
       this.contentFieldsFormArray.removeAt(index);
       this.data.contentFields.splice(index, 1);
     }
-
   }
-
 }
