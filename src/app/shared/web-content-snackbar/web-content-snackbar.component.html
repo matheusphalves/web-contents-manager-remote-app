@@ -1,0 +1,12 @@
+<div fxLayout="row" fxLayoutAlign="space-evenly center"  class="custom-snackbar">
+
+    <div fxFlex="80" fxLayoutAlign="start">
+        <span>{{data.message}}</span>
+    </div>
+
+    <div fxFlex="10">
+        <button mat-icon-button (click)="closeSnackBar()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
