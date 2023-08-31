@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
               this.dataSource.data[data.position - 1] = data
               this.table.renderRows();
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
-
+              this.getStructuredWebContents(undefined, this.paginator.pageIndex +1, this.paginator.pageSize);
               this.webContentSnackBar.openSnackBarWithSuccessStatus('The post has been updated.')
             },
             error: (errorResponse) => {
@@ -123,6 +123,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             next: (response: any) => {
               this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
               this.webContentSnackBar.openSnackBarWithSuccessStatus('The post was created successfully.')
+              this.getStructuredWebContents(undefined, this.paginator.pageIndex +1, this.paginator.pageSize);
             },
             error: (errorResponse) => this.webContentSnackBar.openSnackBarWithErrorStatus(errorResponse.error.title),
           });
@@ -178,6 +179,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
 
     this.dataSource = new MatTableDataSource(webContents)
+    this.table.renderRows()
   }
 
 }
