@@ -6,6 +6,7 @@ import { DataTypeHandlerService } from 'src/app/services/data-handlers/data-type
 import { imageTypeValidator } from '../validators/file-type.validator';
 import { Lightbox } from 'ngx-lightbox';
 import { environment } from 'src/environments/environment.development';
+import { WebContentLocationService } from 'src/app/services/web-content-location.service';
 
 @Component({
   selector: 'app-web-content-dialog',
@@ -18,19 +19,14 @@ export class WebContentDialogComponent implements OnInit {
   isChange!: boolean
   form!: FormGroup;
 
-  toppings = new FormControl('');
-
-  toppingList: string[] = ['INACAP Arica',
-    'INACAP Iquique',
-    'INACAP Calama',
-    'INACAP Antofagasta',
-    'INACAP Copiapó'];
+  locationList: any[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: WebContentModel,
     public dialogRef: MatDialogRef<WebContentDialogComponent>,
     private formBuilder: FormBuilder,
     private dataTypeHandlerService: DataTypeHandlerService,
+    private webContentLocationService: WebContentLocationService,
     private ligthBox: Lightbox) {
 
     this.form = this.formBuilder.group({
@@ -41,7 +37,8 @@ export class WebContentDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.isChange = this.data.id != null;
-    this.createFormGroupForContentFields()
+    this.createFormGroupForContentFields();
+    this.getWebContentLocations();
   }
 
   onCancel(): void {
@@ -54,14 +51,14 @@ export class WebContentDialogComponent implements OnInit {
     const webContentStructureId = this.data.webContentStructure?.id ?? 0;
     let index = 0;
 
-    if(this.isChange){
+    if (this.isChange) {
       this.data.contentFields.forEach(
         ((contentFieldValue: any) => {
           const contentStructureField = this.getWebContentStructureByName(contentFieldValue.name);
           formFields.push(this.createFormGroup(webContentStructureId, contentStructureField, index));
           index++;
-      }));
-    } else{
+        }));
+    } else {
       this.data.webContentStructure?.contentStructureFields?.forEach((
         (contentStructureField: any) => {
           formFields.push(this.createFormGroup(webContentStructureId, contentStructureField, index));
@@ -106,10 +103,11 @@ export class WebContentDialogComponent implements OnInit {
 
   }
 
+
   findContentFieldValueByName(fieldName: string, targetIndex: number): any {
 
     let index = 0;
-    let searchResult = {}; 
+    let searchResult = {};
 
     this.data.contentFields.forEach((contentField: any) => {
       if (contentField?.name == fieldName && index == targetIndex) {
@@ -119,6 +117,20 @@ export class WebContentDialogComponent implements OnInit {
     })
 
     return searchResult;
+  }
+
+  indexesOfContentFieldByName(fieldName: string): number[] {
+    let index = 0;
+    let indexes: number[] = [];
+
+    this.data.contentFields.forEach((contentField: any) => {
+      if (contentField?.name == fieldName) {
+        indexes.push(index);
+      }
+      index++;
+    })
+
+    return indexes;
   }
 
   async saveData(): Promise<any> {
@@ -133,12 +145,12 @@ export class WebContentDialogComponent implements OnInit {
 
       for (const updatedContentField of this.form.value.contentFields) {
         await this.handleDataProcessing(updatedContentField, index)
-        .then(() => { })
-        .catch(() => {hasError=true}) 
+          .then(() => { })
+          .catch(() => { hasError = true })
         index++;
       }
 
-      this.dataSaved.emit(hasError? undefined: this.data);
+      this.dataSaved.emit(hasError ? undefined : this.data);
 
     } catch (error) {
       console.log(error);
@@ -155,7 +167,7 @@ export class WebContentDialogComponent implements OnInit {
     const formData: FormData = new FormData();
     const files = event.target.files;
     const description = event.target.value;
-    let index=0;
+    let index = 0;
 
     this.form.value.contentFields.forEach((formControl: any) => {
       if (formControl.info.dataType == 'image' && formControl.info.name == inputName && index == searchIndex) {
@@ -184,20 +196,21 @@ export class WebContentDialogComponent implements OnInit {
         const dataType = updatedContentField.info.dataType
 
         let data = await this.dataTypeHandlerService.handleDataType(updatedContentField, dataType)
+
         let name = updatedContentField.info.name
+
+        if (data == undefined) { reject() }
+
+
         let contentFieldToUpdate = this.findContentFieldValueByName(name, index)
 
-        if(data == undefined){
-          reject()
-        }
-  
         const contentFieldObject = this.dataTypeHandlerService
           .handleContentFieldValueFormat(this.isChange, dataType, name, data, contentFieldToUpdate)
-  
-        if(!this.isChange){
+
+        if (!this.isChange) {
           this.data.contentFields.push(contentFieldObject);
         }
-  
+
         resolve();
       } catch (error) {
         reject()
@@ -207,7 +220,7 @@ export class WebContentDialogComponent implements OnInit {
   }
 
   clearImageInput(inputName: string, targetIndex: number) {
-    let index=0;
+    let index = 0;
     this.form.value.contentFields.forEach((formControl: any) => {
       if (formControl.info.dataType == 'image' && formControl.info.name == inputName && index == targetIndex) {
         formControl.info.image = {}
@@ -230,7 +243,7 @@ export class WebContentDialogComponent implements OnInit {
 
     let webContentStructure = this.getWebContentStructureByName(contentFieldInfo.name);
 
-    if(this.isChange)
+    if (this.isChange)
       this.data.contentFields.splice(index + 1, 0, this.dataTypeHandlerService.copyOfContentField(this.data.contentFields[index]))
 
     const copyOfFormGroup = this.createFormGroup(contentFieldInfo.contentStructureFieldId, webContentStructure, -1)
@@ -238,7 +251,7 @@ export class WebContentDialogComponent implements OnInit {
 
   }
 
-  getWebContentStructureByName(webContentStructureName: string): any{
+  getWebContentStructureByName(webContentStructureName: string): any {
     return this.data.webContentStructure?.contentStructureFields?.find((webContentStructure: any) => webContentStructure.name == webContentStructureName);
   }
 
@@ -253,8 +266,48 @@ export class WebContentDialogComponent implements OnInit {
     });
 
     if (availableFields > 1) {
+      const data = this.contentFieldsFormArray.value[index].inputControl;
       this.contentFieldsFormArray.removeAt(index);
       this.data.contentFields.splice(index, 1);
+      this.handleLocationChange(data)
     }
+  }
+
+  getWebContentLocations() {
+    this.webContentLocationService.getWebContentLocations().subscribe({
+      next: (next) => {
+        let index = 0;
+        next.items.forEach((item: any) => {
+          this.locationList.push({ 'id': index, 'locationName': item.locationName, 'disabled': false })
+          index++;
+        })
+      },
+      error: (error) => { }
+    })
+  }
+
+  handleLocationChange(locationName: string) {
+
+    if (locationName.length == 0) return;
+
+    const selectedLocations: string[] = []
+
+    this.contentFieldsFormArray.value.forEach((contentField: any) => {
+      if (contentField.info.name == 'location') {
+        selectedLocations.push(contentField.inputControl);
+      }
+    })
+
+    this.setLocationDisableFlag(selectedLocations);
+  }
+
+  setLocationDisableFlag(selectedLocations: string[]){
+    this.locationList.map((element: any) => {
+      const targetLocation = selectedLocations.find(locationName => locationName === element.locationName);
+
+      element.disabled = targetLocation? true: false;
+
+      return element;
+    })
   }
 }

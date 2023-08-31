@@ -69,7 +69,6 @@ export class DataTypeHandlerService {
   async uploadImage(formData: any, description: string) {
 
     let documentFolderId = -1;
-    let webContentImage: WebContentImageModel;
 
     await this.webContentDocumentService.getWebContentParentFolder().then(
       (response: any) => {
@@ -83,7 +82,7 @@ export class DataTypeHandlerService {
 
     return this.webContentDocumentService.postWebContentDocument(formData, documentFolderId).then((response) => {
 
-      return webContentImage = {
+      return  {
         id: response.id,
         sizeInBytes: response.sizeInBytes,
         contentType: 'Document',
