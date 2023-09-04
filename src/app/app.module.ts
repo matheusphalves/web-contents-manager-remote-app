@@ -8,8 +8,6 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './views/home/home.component';
-import { HeaderComponent } from './shared/header/header.component';
-import { FooterComponent } from './shared/footer/footer.component';
 import { RepeatableButtonComponent } from './shared/forms/repeatable-button/repeatable-button.component';
 import { WebContentDialogComponent } from './shared/web-content-dialog/web-content-dialog.component';
 
@@ -18,14 +16,13 @@ import { BasicAuthInterceptor } from './auth/basic-auth.interceptor';
 import { NgMaterialModule } from './modules/ng-material/ng-material/ng-material.module';
 import { FormModuleModule } from './modules/forms/form-module/form-module.module';
 import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-content-snackbar.component';
+import { APP_BASE_HREF } from '@angular/common';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    HeaderComponent,
-    FooterComponent,
     WebContentDialogComponent,
     RepeatableButtonComponent,
     WebContentSnackbarComponent
@@ -44,6 +41,7 @@ import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-c
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
+    {provide: APP_BASE_HREF, useValue: "/web-contents-app"},
     WebContentSnackbarComponent
   ],
   bootstrap: [AppComponent]
