@@ -1,18 +1,23 @@
 <div class="container">
 
-    <div fxLayout="row" fxLayoutAlign="center end">
+    <div class="top-actions" fxLayout="row" fxLayoutAlign="center end">
         <div fxFlex="50">
-            <h4>Web Content Structures available</h4>
-            <mat-form-field>
-                <mat-label>Select Web Content Structure</mat-label>
-                <mat-select [(ngModel)]="selectedStructure">
-                    <mat-option *ngFor="let webContentStructure of webContentStructures" [value]="webContentStructure">
-                        {{webContentStructure.name}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <button mat-button color="primary" (click)="openDialog(null)"
-                disabled="{{selectedStructure == undefined}}">Add Web Content</button>
+            <div fxFlex>
+                <mat-form-field>
+                    <mat-label>Select structure</mat-label>
+                    <mat-select [(ngModel)]="selectedStructure">
+                        <mat-option *ngFor="let webContentStructure of webContentStructures" [value]="webContentStructure">
+                            {{webContentStructure.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxFlex fxLayoutAlign="start center">
+                <button mat-mini-fab color="primary" (click)="openDialog(null)"
+                    disabled="{{selectedStructure == undefined}}">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </div>
         </div>
 
         <div fxLayout="col" fxFlex fxFlexAlign="end end">

@@ -18,6 +18,7 @@ import { FormModuleModule } from './modules/forms/form-module/form-module.module
 import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-content-snackbar.component';
 import { APP_BASE_HREF } from '@angular/common';
 import { LiferayProviderService } from './services/liferay-provider.service';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 
 @NgModule({
@@ -50,6 +51,10 @@ import { LiferayProviderService } from './services/liferay-provider.service';
     {
       provide: APP_BASE_HREF, 
       useValue: "/web-contents-app"
+    },
+    { 
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, 
+      useValue: { subscriptSizing: 'dynamic' }
     },
     {
       provide: WebContentSnackbarComponent
