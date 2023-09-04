@@ -29,3 +29,37 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Connecting the app with Liferay Client Extensions
+
+### Step 01: Build the project
+```
+npm run build:prod
+```
+
+Some files will be generated in the following path ```/dist/web-contents-manager```. All the ```.js```, ```.css``` are necessary.
+
+### Step 02: Upload the builded files to Documents and Media
+
+Upload the files to you prefered location inside the documents and media.
+
+```
+- runtime (js) 
+- polyfills (js)
+- main (js)
+- quill (js)
+- styles (css)
+```
+
+### Step 03: Create a custom element
+For futher more informations about this step, please  [follow the official documentation](https://learn.liferay.com/w/dxp/building-applications/client-extensions/front-end-client-extensions/tutorials/creating-a-basic-custom-element).
+
+```Please add the URL following the order as described on the previous step, otherwise you can experience problems during Angular bootstrapping!```
+
+### Step 04: Create a new Liferay page and add the created remote app.
+
+### Step 05: Add the page on your site (don't forget to publish before testing!)
+
+Enjoy your app!
+
+
