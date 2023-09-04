@@ -17,6 +17,7 @@ import { NgMaterialModule } from './modules/ng-material/ng-material/ng-material.
 import { FormModuleModule } from './modules/forms/form-module/form-module.module';
 import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-content-snackbar.component';
 import { APP_BASE_HREF } from '@angular/common';
+import { LiferayProviderService } from './auth/liferay-provider.service';
 
 
 @NgModule({
@@ -40,9 +41,19 @@ import { APP_BASE_HREF } from '@angular/common';
 
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
-    {provide: APP_BASE_HREF, useValue: "/web-contents-app"},
-    WebContentSnackbarComponent
+    { 
+      provide: HTTP_INTERCEPTORS, 
+      useClass: BasicAuthInterceptor, 
+      multi: true, 
+      deps: [LiferayProviderService]
+    },
+    {
+      provide: APP_BASE_HREF, 
+      useValue: "/web-contents-app"
+    },
+    {
+      provide: WebContentSnackbarComponent
+    }
   ],
   bootstrap: [AppComponent]
 })

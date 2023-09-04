@@ -1,18 +1,17 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { environment } from "src/environments/environment.development";
+import { LiferayProviderService } from "./liferay-provider.service";
 
 export class BasicAuthInterceptor implements HttpInterceptor{
+
+    constructor(public liferayProviderService: LiferayProviderService) { }
     
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
         const clonedRequest = req.clone({
-            setHeaders: {
-                'Authorization': 'Basic ' + btoa(`${environment.userEmail}:${environment.userPassword}`)
-              }
+            setHeaders: this.liferayProviderService.handleAuthStrategy()
         })
 
         return next.handle(clonedRequest);
     }
-
 }

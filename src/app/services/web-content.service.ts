@@ -3,17 +3,20 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { WebContentModel } from '../models/WebContentModel';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { LiferayProviderService } from '../auth/liferay-provider.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebContentService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private liferayProviderService: LiferayProviderService) { }
 
   headers = new HttpHeaders({ "Content-Type": 'application/json'});
 
-  apiUrl: string = `${environment.hostUrl}/${environment.webContentUri}`
+  apiUrl: string = `${this.liferayProviderService.getPortalURL()}/${environment.webContentUri}`
+
+  siteId: string = this.liferayProviderService.getSiteId();
 
   getStructuredWebContents(search: string | undefined, pageNumber: number, pageSize: number): Observable<any>{
     
@@ -25,12 +28,12 @@ export class WebContentService {
       params = params.set('search', search.toString())
     }
 
-    return this.http.get<any>(`${this.apiUrl}/sites/${environment.siteId}/structured-contents`, {params});
+    return this.http.get<any>(`${this.apiUrl}/sites/${this.siteId}/structured-contents`, {params});
   }
 
   postStructuredWebContent(webContent: WebContentModel){
     return this.http.post(
-      `${this.apiUrl}/sites/${environment.siteId}/structured-contents`, 
+      `${this.apiUrl}/sites/${this.siteId}/structured-contents`, 
       JSON.stringify({
         title: webContent.title,
         contentStructureId: webContent.webContentStructure?.id,
