@@ -17,7 +17,7 @@ import { NgMaterialModule } from './modules/ng-material/ng-material/ng-material.
 import { FormModuleModule } from './modules/forms/form-module/form-module.module';
 import { WebContentSnackbarComponent } from './shared/web-content-snackbar/web-content-snackbar.component';
 import { APP_BASE_HREF } from '@angular/common';
-import { LiferayProviderService } from './auth/liferay-provider.service';
+import { LiferayProviderService } from './services/liferay-provider.service';
 
 
 @NgModule({

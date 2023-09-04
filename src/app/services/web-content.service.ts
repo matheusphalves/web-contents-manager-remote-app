@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { WebContentModel } from '../models/WebContentModel';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { LiferayProviderService } from '../auth/liferay-provider.service';
+import { LiferayProviderService } from './liferay-provider.service';
 
 @Injectable({
   providedIn: 'root'

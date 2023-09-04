@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { LiferayProviderService } from "./liferay-provider.service";
+import { LiferayProviderService } from "../services/liferay-provider.service";
 
 export class BasicAuthInterceptor implements HttpInterceptor{
 
