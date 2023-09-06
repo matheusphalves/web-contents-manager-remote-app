@@ -10,11 +10,11 @@ export class WebContentSnackbarService {
   constructor(public webContentSnackBar: MatSnackBar) { }
 
   openSnackBarWithSuccessStatus(message: string, duration?: number | undefined){
-    this.openSnackBar('', message, duration);
+    this.openSnackBar('', message?? 'Success.', duration);
   }
 
   openSnackBarWithErrorStatus(message: string, duration?: number | undefined){
-    this.openSnackBar('error', message, duration);
+    this.openSnackBar('error', message?? 'Unknow error.', duration);
   }
 
   private openSnackBar(status: string, message: string, duration?: number | undefined){ 
