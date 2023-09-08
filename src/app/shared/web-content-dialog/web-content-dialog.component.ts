@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { DataTypeHandlerService } from 'src/app/services/data-handlers/data-type-handler.service';
 import { imageTypeValidator } from '../validators/file-type.validator';
 import { Lightbox } from 'ngx-lightbox';
 import { environment } from 'src/environments/environment.development';
-import { WebContentLocationService } from 'src/app/services/web-content-location.service';
 
 @Component({
   selector: 'app-web-content-dialog',
@@ -19,14 +18,11 @@ export class WebContentDialogComponent implements OnInit {
   isChange!: boolean
   form!: FormGroup;
 
-  locationList: any[] = [];
-
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: WebContentModel,
     public dialogRef: MatDialogRef<WebContentDialogComponent>,
     private formBuilder: FormBuilder,
     private dataTypeHandlerService: DataTypeHandlerService,
-    private webContentLocationService: WebContentLocationService,
     private ligthBox: Lightbox) {
 
     this.form = this.formBuilder.group({
@@ -38,7 +34,6 @@ export class WebContentDialogComponent implements OnInit {
   ngOnInit(): void {
     this.isChange = this.data.id != null;
     this.createFormGroupForContentFields();
-    this.getWebContentLocations();
   }
 
   onCancel(): void {
@@ -269,45 +264,6 @@ export class WebContentDialogComponent implements OnInit {
       const data = this.contentFieldsFormArray.value[index].inputControl;
       this.contentFieldsFormArray.removeAt(index);
       this.data.contentFields.splice(index, 1);
-      this.handleLocationChange(data)
     }
-  }
-
-  getWebContentLocations() {
-    this.webContentLocationService.getWebContentLocations().subscribe({
-      next: (next) => {
-        let index = 0;
-        next.items.forEach((item: any) => {
-          this.locationList.push({ 'id': index, 'locationName': item.locationName, 'disabled': false })
-          index++;
-        })
-      },
-      error: (error) => { }
-    })
-  }
-
-  handleLocationChange(locationName: string) {
-
-    if (locationName.length == 0) return;
-
-    const selectedLocations: string[] = []
-
-    this.contentFieldsFormArray.value.forEach((contentField: any) => {
-      if (contentField.info.name == 'location') {
-        selectedLocations.push(contentField.inputControl);
-      }
-    })
-
-    this.setLocationDisableFlag(selectedLocations);
-  }
-
-  setLocationDisableFlag(selectedLocations: string[]){
-    this.locationList.map((element: any) => {
-      const targetLocation = selectedLocations.find(locationName => locationName === element.locationName);
-
-      element.disabled = targetLocation? true: false;
-
-      return element;
-    })
   }
 }

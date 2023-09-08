@@ -5,7 +5,6 @@
     </div>
     <div fxFlex="40%" fxLayoutAlign="end center" mat-dialog-actions>
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button disabled="true" (click)="onCancel()">Save as draft</button>
       <button mat-button type="submit" (click)="saveData()" color="primary" disabled="{{!this.form.valid}}"
         [mat-dialog-close]="data">
         {{isChange? 'Update': 'Save'}} & Publish
@@ -78,18 +77,6 @@
 
                 </mat-form-field>
               </div>
-            </div>
-
-            <div class="input-control" fxFlex *ngIf="contentField.value.info.name.toLowerCase()=='location'">
-              <ng-container *ngTemplateOutlet="repeatableButtons"></ng-container>
-              <mat-form-field>
-                <mat-select formControlName="inputControl" (selectionChange)="handleLocationChange($event.value)">
-                  <mat-option selected value="{{'Select ' + contentField.value.info.label}}" disabled>Default
-                    value</mat-option>
-                  <mat-option *ngFor="let location of locationList" [disabled]="location.disabled"
-                    [value]="location.locationName">{{location.locationName}}</mat-option>
-                </mat-select>
-              </mat-form-field>
             </div>
 
             <ng-template #repeatableButtons>
