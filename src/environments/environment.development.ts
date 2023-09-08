@@ -4,7 +4,7 @@ export const environment = {
     webContentUri: '/o/headless-delivery/v1.0',
     webContentHistoryUri: '/o/c/webcontenthistorics',
     webContentLocationUri: '/o/c/webcontentlocations',
-    webContentParentFolderName: 'web-contents',
+    webContentImagesFolderName: 'web-content-images',
     siteId: '20119',
     userEmail: 'test@liferay.com',
     userPassword: '1'

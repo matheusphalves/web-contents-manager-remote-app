@@ -22,7 +22,7 @@ export class WebContentDocumentService {
 
   async getWebContentParentFolder(): Promise<any> {
     return this.http
-      .get(`${this.liferayProviderService.getPortalURL()}/${environment.webContentUri}/sites/${this.liferayProviderService.getSiteId()}/document-folders/?filter=name eq '${environment.webContentParentFolderName}'`)
+      .get(`${this.liferayProviderService.getPortalURL()}/${environment.webContentUri}/sites/${this.liferayProviderService.getSiteId()}/document-folders/?filter=name eq '${environment.webContentImagesFolderName}'`)
       .toPromise();
   }
 
