@@ -4,7 +4,6 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { WebContentModel } from 'src/app/models/WebContentModel';
 import { WebContentStructureModel } from 'src/app/models/WebContentStructureModel';
-import { WebContentAuditorService } from 'src/app/services/auditors/web-content-auditor.service';
 import { WebContentSnackbarService } from 'src/app/services/web-content-snackbar.service';
 import { WebContentStructureService } from 'src/app/services/web-content-structure.service';
 import { WebContentService } from 'src/app/services/web-content.service';
@@ -40,7 +39,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     public webContentService: WebContentService,
     public webContentStructureService: WebContentStructureService,
-    public webContentAuditorService: WebContentAuditorService,
     public webContentSnackBar: WebContentSnackbarService) {
     this.getWebContentStructures()
   }
@@ -109,7 +107,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
             next: (response: any) => {
               this.dataSource.data[data.position - 1] = data
               this.table.renderRows();
-              this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
               this.getStructuredWebContents(undefined, this.paginator.pageIndex +1, this.paginator.pageSize);
               this.webContentSnackBar.openSnackBarWithSuccessStatus('The post has been updated.')
             },
@@ -121,7 +118,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
         } else {
           this.webContentService.postStructuredWebContent(data).subscribe({
             next: (response: any) => {
-              this.webContentAuditorService.postWebContentHistory({ webContentId: response.id, change: response.contentFields });
               this.webContentSnackBar.openSnackBarWithSuccessStatus('The post was created successfully.')
               this.getStructuredWebContents(undefined, this.paginator.pageIndex +1, this.paginator.pageSize);
             },
@@ -136,16 +132,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.openDialog(webContent)
   }
 
-  saveWebContentAsDraft(webContent: WebContentModel | null): void {
-
-  }
-
-  publishWebContent(webContent: WebContentModel | null): void {
-
-  }
-
-  unpublishWebContent(webContent: WebContentModel | null): void {
-
+  deleteWebContent(webContentId: number): void {
+    this.webContentService.deleteStructuredWebContent(webContentId).subscribe({
+      next: (response) => {
+        this.webContentSnackBar.openSnackBarWithSuccessStatus('The post was deleted successfully.')
+        this.getStructuredWebContents(undefined, this.paginator.pageIndex +1, this.paginator.pageSize);
+      },
+      error: (errorResponse) => this.webContentSnackBar.openSnackBarWithErrorStatus(errorResponse.error.title)
+    }
+      );
   }
 
   handleWebContentStructure(webContentStructureId: number): WebContentStructureModel | undefined {

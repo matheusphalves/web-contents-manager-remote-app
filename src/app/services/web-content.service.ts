@@ -50,4 +50,10 @@ export class WebContentService {
         contentFields: webContent.contentFields
       }), {headers: this.headers})
   }
+
+  deleteStructuredWebContent(webContentId: number){
+    return this.http.delete(
+      `${this.apiUrl}/structured-contents/${webContentId}`, 
+      {headers: this.headers});
+  }
 }

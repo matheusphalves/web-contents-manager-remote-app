@@ -67,10 +67,8 @@
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef> Action </th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-button color="primary" disabled="true">Save</button>
                     <button mat-button color="primary" (click)="updateWebContent(element)">Edit</button>
-                    <button mat-button color="primary" disabled="true" (click)="publishWebContent(element)">Publish</button>
-                    <button mat-button color="primary" disabled="true" (click)="unpublishWebContent(element)">Expire</button>
+                    <button mat-button color="primary" (click)="deleteWebContent(element.id)">Delete</button>
                 </td>
             </ng-container>
     
