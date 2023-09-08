@@ -1,6 +1,17 @@
-# WebContentsManager
+# POC Client Extension - Web Contents Manager
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+This project contains a minimal version of how to manage web content from client extensions perspective. Therefore, some of the OOTB features may not be fully implemented in the headless layer.
+
+ **Table of content:**
+ - [Angular CLI basics](#topic-01)
+ - [List of Supported Liferay Content Fields](#topic-02)
+ - [Configuring app as a Liferay Client Extensions](#topic-03)
+ 
+ <a id="topic-01"></a>
+
+ ##  Angular CLI basics
+
+ This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
 
 ## Development server
 
@@ -30,8 +41,10 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
+ <a id="topic-02"></a>
+
 ## List of Supported Liferay Content Fields
-The app have supports these content fields types, if you wish, the **repeatable** flag can be check as **true**. 
+The app have supports these content fields types, if you wish, the **repeatable** flag can be check as **true** as well. 
 - Text
 - Date
 - Boolean
@@ -39,6 +52,7 @@ The app have supports these content fields types, if you wish, the **repeatable*
 - Rich text
 
 
+ <a id="topic-03"></a>
 ## Configuring app as a Liferay Client Extensions
 
 ### Step 01: Build the project
@@ -47,6 +61,8 @@ npm run build:prod
 ```
 
 Some files will be generated in the following path ```/dist/web-contents-manager```. All the ```.js```, ```.css``` are necessary.
+
+You can build the project for dev purposes, but keep in mind that you will be running an unoptimized version.
 
 ### Step 02: Upload the builded files to Documents and Media
 
@@ -60,11 +76,15 @@ Upload the files to you preferred location inside the documents and media (the f
 - styles.9b82a77683dc4a13.css
 ```
 
+After uploading these files, copy the WebDAV URL. 
+
 ### Step 03: Create a folder to store the uploaded images
-Create a folder ```web-contents``` in the root path of the D&M. You can change the folder name setting the webContentParentFolderName variable located on ```/enviroments/enviroment.development.ts```.
+Create a folder ```web-content-images``` in the root path of the D&M. You can change the folder name setting the webContentImagesFolderName variable located on ```/enviroments/enviroment.development.ts```.
 
 ### Step 04: Create a custom element
 For futher more informations about this step, please  [follow the official documentation](https://learn.liferay.com/w/dxp/building-applications/client-extensions/front-end-client-extensions/tutorials/creating-a-basic-custom-element).
+
+HTML Element Name: app-root
 
 ```Please add the URL following the order as described on the previous step, otherwise you can experience problems during Angular bootstrapping!```
 
